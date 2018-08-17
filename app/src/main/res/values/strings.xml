@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Meu Simtron</string>
+    <string name="refresh">Refresh</string>
+    <string name="list_refreshed">Sims list refreshed</string>
+    <string name="no_permissions_error">MeuSimtron needs some permissions to work. Tap on refresh button to allow them.</string>
+    <string name="title_activity_edit_sim">Sim data</string>
+    <string name="title_activity_sim">Sim</string>
+
+    <string-array name="providers_array">
+        <item>Movistar Ar</item>
+        <item>Movistar Ar B2B</item>
+        <item>Vivo Br</item>
+        <item>O2 UK</item>
+        <item>Movistar Es</item>
+    </string-array>
+
+    <string-array name="payment_models_array">
+        <item>Prepay</item>
+        <item>Postpay</item>
+        <item>Control</item>
+    </string-array>
+</resources>
