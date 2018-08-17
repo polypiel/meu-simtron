@@ -17,3 +17,4 @@ Create `res/values/slack.xml` and include the following values:
 ## Bugs
  * Ramdon '?' messages
  * SMSs cropped
+ * Slack websocket dies

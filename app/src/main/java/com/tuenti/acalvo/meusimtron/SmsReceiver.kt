@@ -29,7 +29,9 @@ class SmsReceiver: BroadcastReceiver() {
                 "??"
             }
             doAsync {
-                SlackService.instance.send(simDataText, listOf(SlackAttachment(smsText)))
+                val token = context.getString(R.string.token)
+                val channel = context.getString(R.string.channel)
+                SlackService.instance.send(SlackInfo(token, channel), simDataText, listOf(SlackAttachment(smsText)))
             }.execute()
         }
     }

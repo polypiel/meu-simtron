@@ -1,5 +1,6 @@
 package com.tuenti.acalvo.meusimtron
 
+import android.content.Context
 import android.content.res.Resources
 import android.util.Log
 import okhttp3.FormBody
@@ -7,7 +8,10 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 import java.io.IOException
+import java.security.AccessControlContext
 import java.util.concurrent.TimeUnit
+
+class SlackInfo(val token: String, val channel: String)
 
 class SlackAttachment(private val text: String) {
     override fun toString(): String {
@@ -21,12 +25,12 @@ fun List<SlackAttachment>.toJson() =
 
 class SlackService private constructor() {
     private object Holder { val INSTANCE = SlackService() }
-    private val listener: SlackListener = SlackListener(Resources.getSystem().getString(R.string.channel))
+    private var listener: SlackListener? = null
 
-    fun send(text: String, attachments: List<SlackAttachment> = emptyList()) {
+    fun send(slackInfo: SlackInfo, text: String, attachments: List<SlackAttachment> = emptyList()) {
         val requestBody = FormBody.Builder()
-                .add("token", Resources.getSystem().getString(R.string.token))
-                .add("channel", Resources.getSystem().getString(R.string.channel))
+                .add("token", slackInfo.token)
+                .add("channel", slackInfo.channel)
                 .add("text", text)
                 .add("attachments", attachments.toJson())
                 .add("as_user", "true")
@@ -50,8 +54,11 @@ class SlackService private constructor() {
         }
     }
 
-    fun rtm() {
-        if (listener.listening) {
+    fun rtm(slackInfo: SlackInfo) {
+        if (listener == null) {
+            listener = SlackListener(slackInfo)
+        }
+        if (listener?.listening ?: false) {
             Log.w("RTM", "Already running")
             return
         }
@@ -61,7 +68,7 @@ class SlackService private constructor() {
                 .build()
 
         val authRequestBody = FormBody.Builder()
-                .add("token", Resources.getSystem().getString(R.string.token))
+                .add("token", slackInfo.token)
                 .build()
         val authRequest = Request.Builder()
                 .url("https://slack.com/api/rtm.connect")

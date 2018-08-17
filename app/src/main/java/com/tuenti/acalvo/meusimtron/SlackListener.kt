@@ -7,7 +7,7 @@ import okhttp3.WebSocketListener
 import okio.ByteString
 import org.json.JSONObject
 
-class SlackListener(val channel: String): WebSocketListener() {
+class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
     var listening: Boolean = false
 
     override fun onOpen(webSocket: WebSocket?, response: Response?) {
@@ -28,7 +28,7 @@ class SlackListener(val channel: String): WebSocketListener() {
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
         Log.i("RTM", "onMessageText: $text")
-        handleMessage(text!!).forEach { SlackService.instance.send(it) }
+        handleMessage(text!!).forEach { SlackService.instance.send(slackInfo, it) }
     }
 
     override fun onMessage(webSocket: WebSocket?, bytes: ByteString?) {
@@ -43,7 +43,7 @@ class SlackListener(val channel: String): WebSocketListener() {
         val slackMsg = JSONObject(msg)
         return if (slackMsg["type"].toString() == "message"
                 && slackMsg["text"].toString().contains("simtron")
-                && slackMsg["channel"].toString() == channel) {
+                && slackMsg["channel"].toString() == slackInfo.channel) {
             Directory.instance.getAllSimInfo().map { it.toSlackStatus() }
         } else {
             emptyList()
@@ -53,6 +53,6 @@ class SlackListener(val channel: String): WebSocketListener() {
     fun closeAndRestart(webSocket: WebSocket?) {
         listening = false
         webSocket?.close(1000, null)
-        SlackService.instance.rtm()
+        SlackService.instance.rtm(slackInfo)
     }
 }
