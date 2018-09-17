@@ -8,4 +8,4 @@
 .externalNativeBuild
 # Slack info
 **/*/res/values/slack.xml
-
+app/release/

@@ -32,14 +32,14 @@ class Directory private constructor() {
                 "8954079144222272256" to SimData("8954079144222272256", "541156905551", "Movistar Ar B2B", "Control", Country.AR),
                 // Argentina
                 "8954073144322987361" to SimData("8954073144322987361", "542236155363", "Movistar Ar B2C", "Prepay", Country.AR),
-                "8954078100329655471" to SimData("8954078100329655471", "542233055140", "Movistar Ar B2B", "Control", Country.AR),
+                "8954078100329655471" to SimData("8954078100329655471", "542233055140", "Movistar Ar B2C", "Control", Country.AR),
                 "8954078100329655489" to SimData("8954078100329655489", "542234248531", "Movistar Ar B2C", "Postpay", Country.AR),
                 "8954078144384519222" to SimData("8954078144384519222", "542236870308", "Movistar Ar B2B", "Control", Country.AR),
                 "8954078144384519214" to SimData("8954078144384519214", "542236865242", "Movistar Ar B2C", "Postpay", Country.AR)
         )
     }
 
-    val slots: MutableMap<Int, String> = mutableMapOf()
+    private val slots: MutableMap<Int, String> = mutableMapOf()
 
     fun addSim(slot: Int, icc: String) {
         slots[slot] = icc
@@ -48,7 +48,7 @@ class Directory private constructor() {
     fun getSimInfo(slot: Int): SimData? = directory[slots[slot]]
 
     fun getAllSimInfo(): List<SimData> =
-            slots.toList().sortedBy { (key, _) -> key }.map { directory[it.second] }.filterNotNull()
+            slots.toList().sortedBy { (key, _) -> key }.mapNotNull { directory[it.second] }
 
     fun sync(manager: SubscriptionManager) {
         val nSims = manager.activeSubscriptionInfoCount

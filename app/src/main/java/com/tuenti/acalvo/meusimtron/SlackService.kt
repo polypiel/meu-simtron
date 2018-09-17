@@ -1,14 +1,11 @@
 package com.tuenti.acalvo.meusimtron
 
-import android.content.Context
-import android.content.res.Resources
 import android.util.Log
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONObject
 import java.io.IOException
-import java.security.AccessControlContext
 import java.util.concurrent.TimeUnit
 
 class SlackInfo(val token: String, val channel: String)
@@ -50,7 +47,7 @@ class SlackService private constructor() {
 
             Log.d("TestLog", body)
         } catch (ex: IOException) {
-            ex.printStackTrace()
+            Log.e("RTM", "Error sending Slack message", ex)
         }
     }
 
@@ -58,7 +55,7 @@ class SlackService private constructor() {
         if (listener == null) {
             listener = SlackListener(slackInfo)
         }
-        if (listener?.listening ?: false) {
+        if (listener?.listening == true) {
             Log.w("RTM", "Already running")
             return
         }
@@ -84,7 +81,7 @@ class SlackService private constructor() {
             val request = Request.Builder()
                     .url(rtmUrl)
                     .build()
-            client.newWebSocket(request, listener)
+            client.newWebSocket(request, listener!!)
         }
         // Trigger shutdown of the dispatcher's executor so this process can exit cleanly.
         client.dispatcher().executorService().shutdown()

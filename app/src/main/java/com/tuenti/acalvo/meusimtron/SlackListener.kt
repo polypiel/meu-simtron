@@ -50,7 +50,7 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
         }
     }
 
-    fun closeAndRestart(webSocket: WebSocket?) {
+    private fun closeAndRestart(webSocket: WebSocket?) {
         listening = false
         webSocket?.close(1000, null)
         SlackService.instance.rtm(slackInfo)

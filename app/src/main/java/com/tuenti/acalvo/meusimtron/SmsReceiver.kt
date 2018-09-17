@@ -11,7 +11,7 @@ import android.util.Log
 class SmsReceiver: BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action?.equals("android.provider.Telephony.SMS_RECEIVED") ?: false) {
+        if (intent.action?.equals("android.provider.Telephony.SMS_RECEIVED") == true) {
             val smsText = Telephony.Sms.Intents.getMessagesFromIntent(intent)[0]!!.messageBody
             val slot = intent.extras?.getInt("slot", -1) ?: -1
             Log.i("SMS", "Slot $slot: $smsText")
