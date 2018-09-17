@@ -8,6 +8,7 @@ import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
+import android.telephony.SubscriptionManager
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
@@ -17,6 +18,7 @@ import com.tuenti.acalvo.meusimtron.*
 
 class MainActivity : AppCompatActivity() {
     private var errorSnackbar: Snackbar? = null
+    private var slackInfo: SlackInfo? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +30,9 @@ class MainActivity : AppCompatActivity() {
         errorSnackbar = Snackbar.make(layout, R.string.no_permissions_error, Snackbar.LENGTH_INDEFINITE)
         errorSnackbar?.view?.setBackgroundColor(ContextCompat.getColor(this, R.color.error_color_material_light))
 
+        val token = getString(R.string.token)
+        val channel = getString(R.string.channel)
+        slackInfo = SlackInfo(token, channel)
 
         val ok = checkPermissions()
         if (ok) {
@@ -42,9 +47,9 @@ class MainActivity : AppCompatActivity() {
     private fun initMeuSimtron() {
         errorSnackbar?.dismiss()
         syncSims()
-        /*doAsync {
-            SlackService.instance.rtm()
-        }.execute()*/
+        doAsync {
+            SlackService.instance.rtm(slackInfo!!)
+        }.execute()
     }
 
     private fun checkPermissions(): Boolean {
@@ -63,10 +68,8 @@ class MainActivity : AppCompatActivity() {
         return neededPermissions.isEmpty()
     }
 
-    private fun syncSims() { // check permissions
-        //Directory.instance.sync(applicationContext.getSystemService(SubscriptionManager::class.java))
-        Directory.instance.addSim(0, "8954073144104702194")
-        // Populate list
+    private fun syncSims() {
+        Directory.instance.sync(applicationContext.getSystemService(SubscriptionManager::class.java))
         val simsList = findViewById<ListView>(R.id.simsList)
         simsList.adapter = ArrayAdapter<SimData>(this, android.R.layout.simple_list_item_1, Directory.instance.getAllSimInfo())
     }
@@ -101,9 +104,14 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
+    ) {
         if (requestCode == REQUEST_CODE
-                && grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED}) {
+                && grantResults.isNotEmpty()
+                && grantResults.all { it == PackageManager.PERMISSION_GRANTED}) {
             initMeuSimtron()
         }
     }

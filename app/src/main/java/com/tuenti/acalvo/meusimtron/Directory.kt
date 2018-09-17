@@ -16,7 +16,7 @@ data class SimData(
         val provider: String,
         val paymentModel: String,
         val flag: Country) {
-    override fun toString() = "${flag.unicode} $msisdn"
+    override fun toString() = "${flag.unicode} $msisdn - $provider $paymentModel"
     fun toSlackStatus() = "${flag.slack} *$msisdn $provider $paymentModel*. Registered in network."
     fun toSlackInfo() = "${flag.slack} *$msisdn $provider $paymentModel*."
 }
@@ -51,6 +51,7 @@ class Directory private constructor() {
             slots.toList().sortedBy { (key, _) -> key }.mapNotNull { directory[it.second] }
 
     fun sync(manager: SubscriptionManager) {
+        slots.clear()
         val nSims = manager.activeSubscriptionInfoCount
         for (i in 0 until nSims) {
             val icc = manager.getActiveSubscriptionInfoForSimSlotIndex(i).iccId
