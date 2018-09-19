@@ -71,7 +71,10 @@ class MainActivity : AppCompatActivity() {
     private fun syncSims() {
         Directory.instance.sync(applicationContext.getSystemService(SubscriptionManager::class.java))
         val simsList = findViewById<ListView>(R.id.simsList)
-        simsList.adapter = ArrayAdapter<SimData>(this, android.R.layout.simple_list_item_1, Directory.instance.getAllSimInfo())
+        simsList.adapter = ArrayAdapter<SimData>(
+                this,
+                android.R.layout.simple_list_item_1,
+                Directory.instance.getAllSimInfo())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
