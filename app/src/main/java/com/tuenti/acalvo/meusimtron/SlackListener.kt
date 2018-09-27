@@ -6,6 +6,8 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
 import org.json.JSONObject
+import java.util.*
+import kotlin.concurrent.schedule
 
 class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
     var listening: Boolean = false
@@ -13,11 +15,11 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
     override fun onOpen(webSocket: WebSocket?, response: Response?) {
         Log.i(LOG_TAG, "onOpen")
         listening = true
-        webSocket?.send("ping")
+        ping(webSocket)
     }
 
     override fun onFailure(webSocket: WebSocket?, t: Throwable?, response: Response?) {
-        Log.i(LOG_TAG, "onFailure: ${t?.message}")
+        Log.i(LOG_TAG, "onFailure: ${t?.message}", t)
         closeAndRestart(webSocket)
     }
 
@@ -27,12 +29,12 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
-        Log.i(LOG_TAG, "onMessageText: $text")
+        Log.d(LOG_TAG, "onMessageText: $text")
         handleMessage(text!!).forEach { SlackService.instance.send(slackInfo, it) }
     }
 
     override fun onMessage(webSocket: WebSocket?, bytes: ByteString?) {
-        Log.i(LOG_TAG, "onMessageBytes: ${bytes?.hex()}")
+        Log.d(LOG_TAG, "onMessageBytes: ${bytes?.hex()}")
     }
 
     override fun onClosed(webSocket: WebSocket?, code: Int, reason: String?) {
@@ -53,10 +55,25 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
     private fun closeAndRestart(webSocket: WebSocket?) {
         listening = false
         webSocket?.close(1000, null)
-        SlackService.instance.rtm(slackInfo)
+        Timer().schedule(15000L) {
+            SlackService.instance.rtm(slackInfo)
+        }
+    }
+
+    private fun ping(webSocket: WebSocket?) {
+        Timer().schedule(0L, PING_DELAY) {
+            if (listening) {
+                Log.d(LOG_TAG, "-> ping")
+                webSocket?.send(PING)
+            } else {
+                cancel()
+            }
+        }
     }
 
     companion object {
         const val LOG_TAG = "RTM"
+        const val PING_DELAY = 5000L
+        const val PING = """{"type":"ping"}"""
     }
 }

@@ -47,9 +47,6 @@ class MainActivity : AppCompatActivity() {
     private fun initMeuSimtron() {
         errorSnackbar?.dismiss()
         syncSims()
-        doAsync {
-            SlackService.instance.rtm(slackInfo!!)
-        }.execute()
     }
 
     private fun checkPermissions(): Boolean {
