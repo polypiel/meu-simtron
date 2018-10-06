@@ -18,6 +18,7 @@ data class SimData(val icc: String, val providerInfo: ProviderInfo?) {
     override fun toString() = providerInfo?.toString() ?: "🤷 $icc"
     fun toSlackStatus() = providerInfo?.toSlackStatus() ?: icc
     fun toSlackInfo() = providerInfo?.toSlackInfo() ?: icc
+    fun hasProviderInfo() = providerInfo != null
 }
 data class ProviderInfo(
         val msisdn: String,
@@ -52,7 +53,10 @@ class Directory private constructor() {
     private val slots: MutableMap<Int, String> = mutableMapOf()
 
     private fun addSim(slot: Int, icc: String) {
-        slots[slot] = icc
+        val normalizedIcc =
+                if (icc.length > 19) icc.substring(0..18)
+                else icc
+        slots[slot] = normalizedIcc
     }
 
     fun getSimInfo(slot: Int): SimData? = directory[slots[slot]]

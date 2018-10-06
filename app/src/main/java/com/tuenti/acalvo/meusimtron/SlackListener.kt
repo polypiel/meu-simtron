@@ -43,10 +43,14 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
 
     private fun handleMessage(msg: String): List<String> {
         val slackMsg = JSONObject(msg)
+        val text = slackMsg["text"].toString().trim()
         return if (slackMsg["type"].toString() == "message"
-                && slackMsg["text"].toString().contains("simtron")
+                && (text == "simtron" || text == "@simtron")
                 && slackMsg["channel"].toString() == slackInfo.channel) {
-            Directory.instance.getAllSimInfo().map { it.toSlackStatus() }
+            Directory.instance.getAllSimInfo().asSequence()
+                    .filter { it.hasProviderInfo() }
+                    .map { it.toSlackStatus() }
+                    .toList()
         } else {
             emptyList()
         }
