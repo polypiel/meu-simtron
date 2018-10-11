@@ -11,6 +11,8 @@ Create `res/values/slack.xml` and include the following values:
  * Set off any battery-saving preference related with the app
  
 ## Changelog
+## 1.0.4
+
 ### 1.0.3
  * Bugfix: ICCs with check sum
  * Bugfix: do not give status of unknown SIMs

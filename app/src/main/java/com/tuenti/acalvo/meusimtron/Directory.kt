@@ -1,7 +1,19 @@
 package com.tuenti.acalvo.meusimtron
 
-import android.telephony.SubscriptionManager
-import android.util.Log
+enum class PaymentModel {
+    PREPAY,
+    CONTROL,
+    POSTPAY;
+
+    override fun toString(): String = name.capitalize()
+}
+
+enum class Provider(val country: Country, private val displayName: String) {
+    MOVISTAR_AR(Country.AR, "Movistar Ar B2C"),
+    MOVISTAR_B2B_AR(Country.AR, "Movistar Ar B2C"),;
+
+    override fun toString(): String = displayName
+}
 
 enum class Country(val slack: String, val unicode: String) {
     AR(":flag-ar:", "🇦🇷"),
@@ -10,25 +22,27 @@ enum class Country(val slack: String, val unicode: String) {
     GB("flag-gb", "🇬🇧")
 }
 
-data class SimData(val icc: String, val providerInfo: ProviderInfo?) {
-    constructor(icc: String, msisdn: String, provider: String, paymentModel: String, country: Country):
-            this(icc, ProviderInfo(msisdn, provider, paymentModel, country))
+typealias Icc = String
+data class Sim(val icc: Icc, val simInfo: SimInfo?) {
+    constructor(icc: String, msisdn: String, provider: Provider, paymentModel: PaymentModel):
+            this(icc, SimInfo(msisdn, provider, paymentModel))
     constructor(icc: String): this(icc, null)
 
-    override fun toString() = providerInfo?.toString() ?: "🤷 $icc"
-    fun toSlackStatus() = providerInfo?.toSlackStatus() ?: icc
-    fun toSlackInfo() = providerInfo?.toSlackInfo() ?: icc
-    fun hasProviderInfo() = providerInfo != null
+    override fun toString() = simInfo?.toString() ?: "🇦🇶 $icc"
+    fun toSlackStatus() = simInfo?.toSlackStatus() ?: icc
+    fun toSlackInfo() = simInfo?.toSlackInfo() ?: icc
+    fun hasProviderInfo() = simInfo != null
 }
-data class ProviderInfo(
-        val msisdn: String,
-        val provider: String,
-        val paymentModel: String,
-        val flag: Country
+
+typealias Msisdn = String
+data class SimInfo(
+        val msisdn: Msisdn,
+        val provider: Provider,
+        val paymentModel: PaymentModel
 ) {
-    override fun toString() =  "${flag.unicode} $msisdn - $provider $paymentModel"
-    fun toSlackStatus() = "${flag.slack} *$msisdn $provider $paymentModel*. Registered in network."
-    fun toSlackInfo() = "${flag.slack} *$msisdn $provider $paymentModel*."
+    override fun toString() =  "${provider.country.unicode} $msisdn - $provider $paymentModel"
+    fun toSlackStatus() = "${provider.country.slack} *$msisdn $provider $paymentModel*. Registered in network."
+    fun toSlackInfo() = "${provider.country.slack} *$msisdn $provider $paymentModel*."
 }
 
 class Directory private constructor() {
@@ -36,17 +50,17 @@ class Directory private constructor() {
 
     companion object {
         val instance: Directory by lazy { Holder.INSTANCE }
-        private val directory: Map<String, SimData> = mapOf(
+        private val directory: Map<String, Sim> = mapOf(
                  // Madrid
-                "8954073144104702194" to SimData("8954073144104702194", "541165099125", "Movistar Ar B2C", "Prepay", Country.AR),
-                "8954079144222272256" to SimData("8954079144222272256", "541156905551", "Movistar Ar B2B", "Control", Country.AR),
-                "8954073144216962371" to SimData("8954073144216962371", "541149753602", "Movistar Ar B2C", "Prepay", Country.AR),
+                "8954073144104702194" to Sim("8954073144104702194", "541165099125", Provider.MOVISTAR_AR, PaymentModel.PREPAY),
+                "8954073144216962371" to Sim("8954073144216962371", "541149753602", Provider.MOVISTAR_AR, PaymentModel.PREPAY),
+                "8954079144222272256" to Sim("8954079144222272256", "541156905551", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
                 // Argentina
-                "8954073144322987361" to SimData("8954073144322987361", "542236155363", "Movistar Ar B2C", "Prepay", Country.AR),
-                "8954078100329655471" to SimData("8954078100329655471", "542233055140", "Movistar Ar B2C", "Control", Country.AR),
-                "8954078100329655489" to SimData("8954078100329655489", "542234248531", "Movistar Ar B2C", "Postpay", Country.AR),
-                "8954078144384519222" to SimData("8954078144384519222", "542236870308", "Movistar Ar B2B", "Control", Country.AR),
-                "8954078144384519214" to SimData("8954078144384519214", "542236865242", "Movistar Ar B2C", "Postpay", Country.AR)
+                "8954073144322987361" to Sim("8954073144322987361", "542236155363", Provider.MOVISTAR_AR, PaymentModel.PREPAY),
+                "8954078100329655471" to Sim("8954078100329655471", "542233055140", Provider.MOVISTAR_AR, PaymentModel.CONTROL),
+                "8954078144384519222" to Sim("8954078144384519222", "542236870308", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
+                "8954078100329655489" to Sim("8954078100329655489", "542234248531", Provider.MOVISTAR_AR, PaymentModel.POSTPAY),
+                "8954078144384519214" to Sim("8954078144384519214", "542236865242", Provider.MOVISTAR_AR, PaymentModel.POSTPAY)
         )
     }
 
@@ -59,20 +73,17 @@ class Directory private constructor() {
         slots[slot] = normalizedIcc
     }
 
-    fun getSimInfo(slot: Int): SimData? = directory[slots[slot]]
+    fun getSimInfo(slot: Int): Sim? = directory[slots[slot]]
 
-    fun getAllSimInfo(): List<SimData> =
+    fun getAllSimInfo(): List<Sim> =
             slots.toList()
                     .sortedBy { (key, _) -> key }
-                    .map { directory.getOrDefault(it.second, SimData(it.second)) }
+                    .map { directory.getOrDefault(it.second, Sim(it.second)) }
 
-    fun sync(manager: SubscriptionManager) {
+    fun sync(iccs: List<Pair<Int, String>>) {
         slots.clear()
-        val nSims = manager.activeSubscriptionInfoCount
-        for (i in 0 until nSims) {
-            val icc = manager.getActiveSubscriptionInfoForSimSlotIndex(i).iccId
-            Log.d("SIM", "$icc found in slot $i")
-            Directory.instance.addSim(i, icc)
+        iccs.forEach {
+            Directory.instance.addSim(it.first, it.second)
         }
     }
 }

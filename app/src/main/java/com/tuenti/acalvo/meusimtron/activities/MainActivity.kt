@@ -15,6 +15,7 @@ import android.support.v4.app.NotificationManagerCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.telephony.SubscriptionManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
@@ -100,9 +101,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun syncSims() {
-        Directory.instance.sync(applicationContext.getSystemService(SubscriptionManager::class.java))
+        val sims = applicationContext.getSystemService(SubscriptionManager::class.java).getSims()
+        Directory.instance.sync(sims)
         val simsList = findViewById<ListView>(R.id.simsList)
-        simsList.adapter = ArrayAdapter<SimData>(
+        simsList.adapter = ArrayAdapter<Sim>(
                 this,
                 android.R.layout.simple_list_item_1,
                 Directory.instance.getAllSimInfo())
@@ -155,3 +157,15 @@ class MainActivity : AppCompatActivity() {
         const val NOTIFICATION_CHANNEL = "meu-simtron-not"
     }
 }
+
+fun SubscriptionManager.getSims(): List<Pair<Int, String>> =
+    (0..activeSubscriptionInfoCountMax)
+            .map {
+                val icc = getActiveSubscriptionInfoForSimSlotIndex(it)?.iccId
+                if (icc != null) {
+                    Log.d("SIM", "$icc found in slot $it")
+                    Pair(it, icc)
+                } else {
+                    null
+                }
+            }.filterNotNull().toList()
