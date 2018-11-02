@@ -25,7 +25,7 @@ class SmsReceiver: BroadcastReceiver() {
                     Directory.instance.sync(sims)
                     simData = Directory.instance.getSimInfo(slot)
                 }
-                simData?.toSlackInfo() ?: "?"
+                simData?.toSlackInfo() ?: "Unknown sim"
             } else {
                 Log.w("SMS", "unknown slot")
                 "??"

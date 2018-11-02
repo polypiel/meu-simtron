@@ -29,9 +29,9 @@ data class Sim(val icc: Icc, val simInfo: SimInfo?) {
     constructor(icc: String): this(icc, null)
 
     override fun toString() = simInfo?.toString() ?: "🇦🇶 $icc"
-    fun toSlackStatus() = simInfo?.toSlackStatus() ?: icc
-    fun toSlackInfo() = simInfo?.toSlackInfo() ?: icc
-    fun hasProviderInfo() = simInfo != null
+    fun toSlackStatus(): String = simInfo?.toSlackStatus() ?: icc
+    fun toSlackInfo(): String = simInfo?.toSlackInfo() ?: "Unknown sim with icc: $icc"
+    fun hasProviderInfo(): Boolean = simInfo != null
 }
 
 typealias Msisdn = String
@@ -55,6 +55,7 @@ class Directory private constructor() {
                 "8954073144104702194" to Sim("8954073144104702194", "541165099125", Provider.MOVISTAR_AR, PaymentModel.PREPAY),
                 "8954073144216962371" to Sim("8954073144216962371", "541149753602", Provider.MOVISTAR_AR, PaymentModel.PREPAY),
                 "8954079144222272256" to Sim("8954079144222272256", "541156905551", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
+                //"8954075144249486446" to Sim("8954075144249486446", "54115139576", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
                 // Argentina
                 "8954073144322987361" to Sim("8954073144322987361", "542236155363", Provider.MOVISTAR_AR, PaymentModel.PREPAY),
                 "8954078100329655471" to Sim("8954078100329655471", "542233055140", Provider.MOVISTAR_AR, PaymentModel.CONTROL),
@@ -73,7 +74,10 @@ class Directory private constructor() {
         slots[slot] = normalizedIcc
     }
 
-    fun getSimInfo(slot: Int): Sim? = directory[slots[slot]]
+    fun getSimInfo(slot: Int): Sim? {
+        val icc = slots[slot] ?: return null
+        return directory.getOrDefault(icc, Sim(icc, null))
+    }
 
     fun getAllSimInfo(): List<Sim> =
             slots.toList()
