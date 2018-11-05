@@ -30,7 +30,11 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
         Log.d(LOG_TAG, "onMessageText: $text")
-        handleMessage(text!!).forEach { SlackService.instance.send(slackInfo, it) }
+        handleMessage(text!!).forEach {
+            Timer().schedule(1000L) {
+                SlackService.instance.send(slackInfo, it)
+            }
+        }
     }
 
     override fun onMessage(webSocket: WebSocket?, bytes: ByteString?) {
@@ -49,7 +53,7 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
 
         val text = slackMsg["text"].toString().trim()
         return if (slackMsg["type"].toString() == "message"
-                && (text == "simtron" || text == "@simtron")
+                && (text.toLowerCase() == "simtron" || text == "@simtron")
                 && slackMsg["channel"].toString() == slackInfo.channel) {
             Directory.instance.getAllSimInfo().asSequence()
                     .filter { it.hasProviderInfo() }
