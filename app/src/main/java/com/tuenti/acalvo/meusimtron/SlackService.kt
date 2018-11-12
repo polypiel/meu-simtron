@@ -12,7 +12,7 @@ class SlackInfo(val token: String, val channel: String)
 
 class SlackAttachment(private val text: String) {
     override fun toString(): String {
-        return "{\"text\":\"$text\",\"color\":\"#d3d3d3\"}"
+        return "{\"text\":\"$text\",\"color\":\"#d3d3d3\",\"author_name\":\":envelope_with_arrow:\"}"
     }
 }
 

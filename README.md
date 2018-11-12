@@ -12,6 +12,8 @@ Create `res/values/slack.xml` and include the following values:
  
 ## Changelog
 ## 1.0.4
+ * Slack format messages changes to match Simtron v2
+ * Bugfixes
 
 ### 1.0.3
  * Bugfix: ICCs with check sum

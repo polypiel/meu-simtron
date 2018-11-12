@@ -9,8 +9,8 @@ enum class PaymentModel {
 }
 
 enum class Provider(val country: Country, private val displayName: String) {
-    MOVISTAR_AR(Country.AR, "Movistar Ar B2C"),
-    MOVISTAR_B2B_AR(Country.AR, "Movistar Ar B2C"),;
+    MOVISTAR_AR(Country.AR, "Movistar"),
+    MOVISTAR_B2B_AR(Country.AR, "Movistar B2B"),;
 
     override fun toString(): String = displayName
 }
@@ -41,8 +41,8 @@ data class SimInfo(
         val paymentModel: PaymentModel
 ) {
     override fun toString() =  "${provider.country.unicode} $msisdn - $provider $paymentModel"
-    fun toSlackStatus() = "${provider.country.slack} *$msisdn $provider $paymentModel*. Registered in network."
-    fun toSlackInfo() = "${provider.country.slack} *$msisdn $provider $paymentModel*."
+    fun toSlackStatus() = "${provider.country.slack} *$msisdn* $provider $paymentModel"
+    fun toSlackInfo() = "${provider.country.slack} *$msisdn* $provider $paymentModel"
 }
 
 class Directory private constructor() {
