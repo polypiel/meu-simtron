@@ -11,7 +11,10 @@ Create `res/values/slack.xml` and include the following values:
  * Set off any battery-saving preference related with the app
  
 ## Changelog
-## 1.0.4
+### 1.0.5
+ * Kotlin 1.3
+
+### 1.0.4
  * Slack format messages changes to match Simtron v2
  * Bugfixes
 
