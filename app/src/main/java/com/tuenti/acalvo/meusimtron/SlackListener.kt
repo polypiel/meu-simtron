@@ -10,7 +10,8 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
-    var listening: Boolean = false
+    private var listening: Boolean = false
+    private var lastPing: Long = 0
 
     override fun onOpen(webSocket: WebSocket?, response: Response?) {
         Log.i(LOG_TAG, "onOpen")
@@ -30,9 +31,10 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
         Log.d(LOG_TAG, "onMessageText: $text")
-        handleMessage(text!!).forEach {
+        val slackMsg = JSONObject(text!!)
+        handleMessage(slackMsg).forEach {
             Timer().schedule(1000L) {
-                SlackService.instance.send(slackInfo, it)
+                SlackService.instance.send(slackInfo.token, slackMsg["channel"].toString(), it)
             }
         }
     }
@@ -45,24 +47,19 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
         Log.i(LOG_TAG, "onClosed: $code $reason")
     }
 
-    private fun handleMessage(msg: String): List<String> {
-        val slackMsg = JSONObject(msg)
-        if (!slackMsg.has("text")) {
-            return emptyList()
-        }
+    fun isAlive() = listening && (currentTime() - lastPing) < ALIVENESS
 
-        val text = slackMsg["text"].toString().trim()
-        return if (slackMsg["type"].toString() == "message"
-                && (text.toLowerCase() == "simtron" || text == "@simtron")
-                && slackMsg["channel"].toString() == slackInfo.channel) {
-            Directory.instance.getAllSimInfo().asSequence()
-                    .filter { it.hasProviderInfo() }
-                    .map { it.toSlackStatus() }
-                    .toList()
-        } else {
-            emptyList()
-        }
-    }
+    private fun handleMessage(slackMsg: JSONObject): List<String> =
+            when {
+                slackMsg.isPong() -> pong()
+                slackMsg.isPublicMsg() && slackMsg.isSimtronCmd() -> {
+                    Directory.instance.getAllSimInfo().asSequence()
+                            .filter { it.hasProviderInfo() }
+                            .map { it.toSlack() }
+                            .toList()
+                }
+                else -> emptyList()
+            }
 
     private fun closeAndRestart(webSocket: WebSocket?) {
         listening = false
@@ -83,9 +80,31 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
         }
     }
 
+    private fun pong(): List<String> {
+        lastPing = currentTime()
+        return emptyList()
+    }
+
     companion object {
         const val LOG_TAG = "RTM"
         const val PING_DELAY = 5000L
         const val PING = """{"type":"ping"}"""
+        const val ALIVENESS = 300
+    }
+
+    private fun currentTime() = System.currentTimeMillis() / 1000
+
+    fun JSONObject.isPong() =
+            this["type"].toString() == "pong"
+
+    fun JSONObject.isPublicMsg(): Boolean {
+        val channel = this["channel"].toString()
+        return this["type"].toString() == "message"
+                && (channel == slackInfo.channel || channel == slackInfo.debugChannel)
+    }
+
+    fun JSONObject.isSimtronCmd(): Boolean {
+        val text = this["text"].toString().trim()
+        return text.toLowerCase() == "simtron" || text == "@simtron"
     }
 }

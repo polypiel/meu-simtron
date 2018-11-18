@@ -39,7 +39,8 @@ class MainActivity : AppCompatActivity() {
 
         val token = getString(R.string.token)
         val channel = getString(R.string.channel)
-        slackInfo = SlackInfo(token, channel)
+        val debugChannel = getString(R.string.debugChannel)
+        slackInfo = SlackInfo(token, channel, debugChannel)
 
         val ok = checkPermissions()
         if (ok) {

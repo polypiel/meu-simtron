@@ -8,7 +8,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class SlackInfo(val token: String, val channel: String)
+class SlackInfo(val token: String, val channel: String, val debugChannel: String)
 
 class SlackAttachment(private val text: String) {
     override fun toString(): String {
@@ -24,10 +24,10 @@ class SlackService private constructor() {
     private object Holder { val INSTANCE = SlackService() }
     private var listener: SlackListener? = null
 
-    fun send(slackInfo: SlackInfo, text: String, attachments: List<SlackAttachment> = emptyList()) {
+    fun send(token: String, channel: String, text: String, attachments: List<SlackAttachment> = emptyList()) {
         val requestBody = FormBody.Builder()
-                .add("token", slackInfo.token)
-                .add("channel", slackInfo.channel)
+                .add("token", token)
+                .add("channel", channel)
                 .add("text", text)
                 .add("attachments", attachments.toJson())
                 .add("as_user", "true")

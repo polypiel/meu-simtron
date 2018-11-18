@@ -25,7 +25,7 @@ class SmsReceiver: BroadcastReceiver() {
                     Directory.instance.sync(sims)
                     simData = Directory.instance.getSimInfo(slot)
                 }
-                simData?.toSlackInfo() ?: "Unknown sim"
+                simData?.toSlack() ?: "Unknown sim"
             } else {
                 Log.w("SMS", "unknown slot")
                 "??"
@@ -33,7 +33,7 @@ class SmsReceiver: BroadcastReceiver() {
             doAsync {
                 val token = context.getString(R.string.token)
                 val channel = context.getString(R.string.channel)
-                SlackService.instance.send(SlackInfo(token, channel), simDataText, listOf(SlackAttachment(smsText)))
+                SlackService.instance.send(token, channel, simDataText, listOf(SlackAttachment(smsText)))
             }.execute()
         }
     }
