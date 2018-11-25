@@ -165,13 +165,12 @@ class MainActivity : AppCompatActivity() {
 }
 
 fun SubscriptionManager.getSims(): List<Pair<Int, String>> =
-    (0..activeSubscriptionInfoCountMax)
-            .map {
-                val icc = getActiveSubscriptionInfoForSimSlotIndex(it)?.iccId
-                if (icc != null) {
-                    Log.d("SIM", "$icc found in slot $it")
-                    Pair(it, icc)
-                } else {
-                    null
-                }
-            }.filterNotNull().toList()
+        (0..activeSubscriptionInfoCountMax).map {
+            val icc = getActiveSubscriptionInfoForSimSlotIndex(it)?.iccId
+            if (icc != null) {
+                Log.d("SIM", "$icc found in slot $it")
+                Pair(it, icc)
+            } else {
+                null
+            }
+        }.filterNotNull().toList()
