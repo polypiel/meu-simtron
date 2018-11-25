@@ -47,7 +47,7 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
         Log.i(LOG_TAG, "onClosed: $code $reason")
     }
 
-    fun isAlive() = listening && (currentTime() - lastPing) < ALIVENESS
+    fun isAlive(): Boolean = listening && (currentTime() - lastPing) < LIFESPAN
 
     private fun handleMessage(slackMsg: JSONObject): List<String> =
             when {
@@ -65,7 +65,7 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
         listening = false
         webSocket?.close(1000, null)
         Timer().schedule(15000L) {
-            SlackService.instance.rtm(slackInfo)
+            SlackService.instance.rtm(slackInfo.channel, this@SlackListener)
         }
     }
 
@@ -89,7 +89,7 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
         const val LOG_TAG = "RTM"
         const val PING_DELAY = 5000L
         const val PING = """{"type":"ping"}"""
-        const val ALIVENESS = 300
+        const val LIFESPAN = 300
     }
 
     private fun currentTime() = System.currentTimeMillis() / 1000

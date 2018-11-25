@@ -50,6 +50,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         createNotification()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         startService(Intent(this, StatusService::class.java))
     }
 

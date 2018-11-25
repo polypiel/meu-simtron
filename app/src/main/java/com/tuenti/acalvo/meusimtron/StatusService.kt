@@ -4,9 +4,16 @@ import android.app.IntentService
 import android.content.Intent
 
 class StatusService : IntentService("StatusService") {
+    private var listener: SlackListener? = null
+
     override fun onHandleIntent(intent: Intent?) {
-        val token = getString(R.string.token)
-        val channel = getString(R.string.channel)
-        SlackService.instance.rtm(SlackInfo(token, channel))
+        if (listener == null || !listener!!.isAlive()) {
+            val token = getString(R.string.token)
+            val channel = getString(R.string.channel)
+            listener = SlackListener(SlackInfo(token, channel, channel))
+
+            SlackService.instance.rtm(token, listener!!)
+        }
+
     }
 }

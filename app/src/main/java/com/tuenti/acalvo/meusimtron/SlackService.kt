@@ -22,7 +22,6 @@ fun List<SlackAttachment>.toJson() =
 
 class SlackService private constructor() {
     private object Holder { val INSTANCE = SlackService() }
-    private var listener: SlackListener? = null
 
     fun send(token: String, channel: String, text: String, attachments: List<SlackAttachment> = emptyList()) {
         val requestBody = FormBody.Builder()
@@ -51,21 +50,13 @@ class SlackService private constructor() {
         }
     }
 
-    fun rtm(slackInfo: SlackInfo) {
-        if (listener == null) {
-            listener = SlackListener(slackInfo)
-        }
-        if (listener?.listening == true) {
-            Log.w("RTM", "Already running")
-            return
-        }
-
+    fun rtm(token: String, listener: SlackListener) {
         val client = OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)
                 .build()
 
         val authRequestBody = FormBody.Builder()
-                .add("token", slackInfo.token)
+                .add("token", token)
                 .build()
         val authRequest = Request.Builder()
                 .url("https://slack.com/api/rtm.connect")
@@ -81,7 +72,7 @@ class SlackService private constructor() {
             val request = Request.Builder()
                     .url(rtmUrl)
                     .build()
-            client.newWebSocket(request, listener!!)
+            client.newWebSocket(request, listener)
         }
         // Trigger shutdown of the dispatcher's executor so this process can exit cleanly.
         client.dispatcher().executorService().shutdown()
