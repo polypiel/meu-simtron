@@ -10,7 +10,8 @@ class StatusService : IntentService("StatusService") {
         if (listener == null || !listener!!.isAlive()) {
             val token = getString(R.string.token)
             val channel = getString(R.string.channel)
-            listener = SlackListener(SlackInfo(token, channel, channel))
+            val debugChannel = getString(R.string.debugChannel)
+            listener = SlackListener(SlackInfo(token, channel, debugChannel))
 
             SlackService.instance.rtm(token, listener!!)
         }
