@@ -31,8 +31,15 @@ data class Sim(val icc: Icc, val simInfo: SimInfo?) {
     constructor(icc: String): this(icc, null)
 
     override fun toString() = simInfo?.toString() ?: "🇦🇶 $icc"
-    fun toSlack(): String = simInfo?.toSlack() ?: "🇦🇶 Unknown sim with icc: $icc"
-    fun toSlackDebug(): String = "${toSlack()} :iphone: ${Build.MANUFACTURER.capitalize()} ${Build.MODEL.capitalize()}"
+
+    fun toSlack(debug: Boolean = false): String {
+        val str = simInfo?.toSlack() ?: "🇦🇶 Unknown sim with icc: $icc"
+        return if (debug)
+            "$str :iphone: ${Build.MANUFACTURER.capitalize()} ${Build.MODEL.capitalize()}"
+        else
+            str
+    }
+
     fun hasProviderInfo(): Boolean = simInfo != null
 }
 

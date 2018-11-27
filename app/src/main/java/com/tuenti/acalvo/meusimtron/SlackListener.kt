@@ -53,9 +53,10 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
             when {
                 slackMsg.isPong() -> pong()
                 slackMsg.isPublicMsg() && slackMsg.isSimtronCmd() -> {
+                    val debug = slackMsg.isDebug()
                     Directory.instance.getAllSimInfo().asSequence()
-                            .filter { it.hasProviderInfo() }
-                            .map { if (slackMsg.isDebug()) it.toSlackDebug() else it.toSlack() }
+                            .filter { debug || it.hasProviderInfo() }
+                            .map { it.toSlack(debug) }
                             .toList()
                 }
                 else -> emptyList()
