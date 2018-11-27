@@ -31,7 +31,7 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
         Log.d(LOG_TAG, "onMessageText: $text")
-        val slackMsg = JSONObject(text!!)
+        val slackMsg = JSONObject(text!!.filterNot { it.isISOControl() })
         handleMessage(slackMsg).forEach {
             Timer().schedule(1000L) {
                 SlackService.instance.send(slackInfo.token, slackMsg["channel"].toString(), it)
@@ -51,11 +51,12 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
 
     private fun handleMessage(slackMsg: JSONObject): List<String> =
             when {
+                slackMsg.isHello() -> emptyList()
                 slackMsg.isPong() -> pong()
                 slackMsg.isPublicMsg() && slackMsg.isSimtronCmd() -> {
                     Directory.instance.getAllSimInfo().asSequence()
                             .filter { it.hasProviderInfo() }
-                            .map { it.toSlack() }
+                            .map { if (slackMsg.isDebug()) it.toSlackDebug() else it.toSlack() }
                             .toList()
                 }
                 else -> emptyList()
@@ -97,11 +98,17 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
     fun JSONObject.isPong() =
             this["type"].toString() == "pong"
 
+    fun JSONObject.isHello() =
+            this["type"].toString() == "hello"
+
     fun JSONObject.isPublicMsg(): Boolean {
-        val channel = this["channel"].toString()
+        val channel = this["channel"].toString() // can fail if not channel
         return this["type"].toString() == "message"
                 && (channel == slackInfo.channel || channel == slackInfo.debugChannel)
     }
+
+    fun JSONObject.isDebug(): Boolean =
+            this["type"].toString() == "message" && this["channel"].toString() == slackInfo.debugChannel
 
     fun JSONObject.isSimtronCmd(): Boolean {
         val text = this["text"].toString().trim()

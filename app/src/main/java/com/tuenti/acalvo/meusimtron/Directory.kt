@@ -1,5 +1,7 @@
 package com.tuenti.acalvo.meusimtron
 
+import android.os.Build
+
 enum class PaymentModel {
     PREPAY,
     CONTROL,
@@ -30,6 +32,7 @@ data class Sim(val icc: Icc, val simInfo: SimInfo?) {
 
     override fun toString() = simInfo?.toString() ?: "🇦🇶 $icc"
     fun toSlack(): String = simInfo?.toSlack() ?: "🇦🇶 Unknown sim with icc: $icc"
+    fun toSlackDebug(): String = "${toSlack()} @ :iphone: ${Build.MANUFACTURER.capitalize()} ${Build.MODEL.capitalize()}"
     fun hasProviderInfo(): Boolean = simInfo != null
 }
 
