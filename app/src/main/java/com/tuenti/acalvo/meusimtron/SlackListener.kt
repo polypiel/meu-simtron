@@ -34,7 +34,7 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
         val slackMsg = JSONObject(text!!.filterNot { it.isISOControl() })
         handleMessage(slackMsg).forEach {
             Timer().schedule(1000L) {
-                SlackService.instance.send(slackInfo.token, slackMsg["channel"].toString(), it)
+                SlackService.instance.send(slackInfo.token, slackMsg.getStr("channel")!!, it)
             }
         }
     }
@@ -51,7 +51,6 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
 
     private fun handleMessage(slackMsg: JSONObject): List<String> =
             when {
-                slackMsg.isHello() -> emptyList()
                 slackMsg.isPong() -> pong()
                 slackMsg.isPublicMsg() && slackMsg.isSimtronCmd() -> {
                     Directory.instance.getAllSimInfo().asSequence()
@@ -95,23 +94,23 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
 
     private fun currentTime() = System.currentTimeMillis() / 1000
 
-    fun JSONObject.isPong() =
-            this["type"].toString() == "pong"
+    private fun JSONObject.getStr(prop: String): String? =
+            if (has(prop)) this[prop].toString() else null
 
-    fun JSONObject.isHello() =
-            this["type"].toString() == "hello"
+    private fun JSONObject.isPong() =
+            getStr("type") == "pong"
 
-    fun JSONObject.isPublicMsg(): Boolean {
-        val channel = this["channel"].toString() // can fail if not channel
-        return this["type"].toString() == "message"
+    private fun JSONObject.isPublicMsg(): Boolean {
+        val channel = getStr("channel")
+        return getStr("type") == "message"
                 && (channel == slackInfo.channel || channel == slackInfo.debugChannel)
     }
 
-    fun JSONObject.isDebug(): Boolean =
-            this["type"].toString() == "message" && this["channel"].toString() == slackInfo.debugChannel
+    private fun JSONObject.isDebug(): Boolean =
+            getStr("type") == "message" && getStr("channel") == slackInfo.debugChannel
 
-    fun JSONObject.isSimtronCmd(): Boolean {
-        val text = this["text"].toString().trim()
-        return text.toLowerCase() == "simtron" || text == "@simtron"
+    private fun JSONObject.isSimtronCmd(): Boolean {
+        val text = getStr("text")?.trim()
+        return text?.toLowerCase() == "simtron" || text == "@simtron"
     }
 }
