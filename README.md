@@ -36,3 +36,14 @@ Create `res/values/slack.xml` and include the following values:
  * Random '?' messages
  * SMSs cropped
  * Slack websocket dies
+
+
+## FAQ
+### How I send texts in the simulator
+```
+cat /home/acalvo/.emulator_console_auth_token; echo
+telnet
+o localhost 5554
+auth XXXXXXXXXX
+sms send 0123456 "Your Message"
+```

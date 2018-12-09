@@ -3,16 +3,18 @@ package com.tuenti.acalvo.meusimtron.activities
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.telephony.SubscriptionManager
 import android.util.Log
@@ -35,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         val layout = findViewById<ConstraintLayout>(R.id.layout)
         errorSnackbar = Snackbar.make(layout, R.string.no_permissions_error, Snackbar.LENGTH_INDEFINITE)
-        errorSnackbar?.view?.setBackgroundColor(ContextCompat.getColor(this, R.color.error_color_material_light))
+        errorSnackbar?.view?.setBackgroundColor(Color.parseColor("#ff7961"))
 
         val token = getString(R.string.token)
         val channel = getString(R.string.channel)
@@ -73,11 +75,19 @@ class MainActivity : AppCompatActivity() {
                     getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
+
+        val resultIntent = Intent(this, MainActivity::class.java)
+        val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(this).run {
+            addNextIntentWithParentStack(resultIntent)
+            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+
         val mBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
                 .setSmallIcon(R.drawable.ic_stat_ms)
                 .setContentTitle("MeuSimtron")
                 .setContentText("MeuSimtron")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(resultPendingIntent)
                 .setOngoing(true)
         with(NotificationManagerCompat.from(this)) {
             // notificationId is a unique int for each notification that you must define
@@ -164,13 +174,16 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-fun SubscriptionManager.getSims(): List<Pair<Int, String>> =
-        (0..activeSubscriptionInfoCountMax).map {
-            val icc = getActiveSubscriptionInfoForSimSlotIndex(it)?.iccId
-            if (icc != null) {
-                Log.d("SIM", "$icc found in slot $it")
-                Pair(it, icc)
-            } else {
-                null
-            }
-        }.filterNotNull().toList()
+fun SubscriptionManager.getSims(): List<Pair<Int, String>> = try {
+    (0..activeSubscriptionInfoCountMax).mapNotNull {
+        val icc = getActiveSubscriptionInfoForSimSlotIndex(it)?.iccId
+        if (icc != null) {
+            Log.d("SIM", "$icc found in slot $it")
+            Pair(it, icc)
+        } else {
+            null
+        }
+    }.toList()
+} catch (e: SecurityException) {
+    emptyList()
+}

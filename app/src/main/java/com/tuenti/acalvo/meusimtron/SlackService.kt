@@ -40,13 +40,12 @@ class SlackService private constructor() {
         val client = OkHttpClient()
 
         try {
-            Log.d("TestLog", "slack : $text < ${attachments.toJson()}")
+            Log.d(LOG_TAG, "Slack: $text < ${attachments.toJson()}")
             val response = client.newCall(request).execute()
-            val body = response.body()!!.string()
+            response.body()!!.string()
 
-            Log.d("TestLog", body)
         } catch (ex: IOException) {
-            Log.e("RTM", "Error sending Slack message", ex)
+            Log.e(LOG_TAG, "Error sending Slack message", ex)
         }
     }
 
@@ -64,11 +63,10 @@ class SlackService private constructor() {
                 .build()
         val httpResponse = client.newCall(authRequest).execute()
         val response = JSONObject(httpResponse.body()!!.string())
-        Log.i("RTM", "RTM auth $response")
+        Log.i(LOG_TAG, "RTM auth $response")
 
         if ("true" == response["ok"].toString()) {
             val rtmUrl = response["url"].toString()
-            Log.i("RTM", "URL: $rtmUrl")
             val request = Request.Builder()
                     .url(rtmUrl)
                     .build()
@@ -80,5 +78,6 @@ class SlackService private constructor() {
 
     companion object {
         val instance: SlackService by lazy { Holder.INSTANCE }
+        const val LOG_TAG = "MEU-SLACK"
     }
 }

@@ -14,23 +14,23 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
     private var lastPing: Long = 0
 
     override fun onOpen(webSocket: WebSocket?, response: Response?) {
-        Log.i(LOG_TAG, "onOpen")
+        Log.i(LOG_TAG, "RTM onOpen")
         listening = true
         ping(webSocket)
     }
 
     override fun onFailure(webSocket: WebSocket?, t: Throwable?, response: Response?) {
-        Log.i(LOG_TAG, "onFailure: ${t?.message}", t)
+        Log.i(LOG_TAG, "RTM onFailure: ${t?.message}", t)
         closeAndRestart(webSocket)
     }
 
     override fun onClosing(webSocket: WebSocket?, code: Int, reason: String?) {
-        Log.i(LOG_TAG, "onClosing: $code $reason")
+        Log.i(LOG_TAG, "RTM onClosing: $code $reason")
         closeAndRestart(webSocket)
     }
 
     override fun onMessage(webSocket: WebSocket?, text: String?) {
-        Log.d(LOG_TAG, "onMessageText: $text")
+        Log.d(LOG_TAG, "RTM onMessageText: $text")
         val slackMsg = JSONObject(text!!.filterNot { it.isISOControl() })
         handleMessage(slackMsg).forEach {
             Timer().schedule(1000L) {
@@ -40,11 +40,11 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
     }
 
     override fun onMessage(webSocket: WebSocket?, bytes: ByteString?) {
-        Log.d(LOG_TAG, "onMessageBytes: ${bytes?.hex()}")
+        Log.d(LOG_TAG, "RTM onMessageBytes: ${bytes?.hex()}")
     }
 
     override fun onClosed(webSocket: WebSocket?, code: Int, reason: String?) {
-        Log.i(LOG_TAG, "onClosed: $code $reason")
+        Log.i(LOG_TAG, "RTM onClosed: $code $reason")
     }
 
     fun isAlive(): Boolean = listening && (currentTime() - lastPing) < LIFESPAN
@@ -73,7 +73,6 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
     private fun ping(webSocket: WebSocket?) {
         Timer().schedule(0L, PING_DELAY) {
             if (listening) {
-                Log.d(LOG_TAG, "-> ping")
                 webSocket?.send(PING)
             } else {
                 cancel()
@@ -87,7 +86,7 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
     }
 
     companion object {
-        const val LOG_TAG = "RTM"
+        const val LOG_TAG = "MEU-SLACK"
         const val PING_DELAY = 5000L
         const val PING = """{"type":"ping"}"""
         const val LIFESPAN = 300
