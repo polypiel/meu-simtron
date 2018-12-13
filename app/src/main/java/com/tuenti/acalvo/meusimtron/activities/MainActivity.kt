@@ -82,10 +82,16 @@ class MainActivity : AppCompatActivity() {
             getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
         }
 
+        val sims = Directory.instance.getAllSimInfo()
+        val text = if(sims.isEmpty()) {
+            "No sims"
+        } else{
+            sims.joinToString(", ", "Listening ", "sims.") { it.getMsisdnOrIcc() }
+        }
         val mBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
                 .setSmallIcon(R.drawable.ic_stat_ms)
                 .setContentTitle("MeuSimtron")
-                .setContentText("MeuSimtron")
+                .setContentText(text)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(resultPendingIntent)
                 .setOngoing(true)
@@ -173,6 +179,9 @@ class MainActivity : AppCompatActivity() {
         const val NOTIFICATION_CHANNEL = "meu-simtron-not"
     }
 }
+
+fun Sim.getMsisdnOrIcc() =
+        simInfo?.msisdn ?: icc
 
 fun SubscriptionManager.getSims(): List<Pair<Int, String>> = try {
     (0..activeSubscriptionInfoCountMax).mapNotNull {

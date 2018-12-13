@@ -15,6 +15,7 @@ Create `res/values/slack.xml` and include the following values:
  * Kotlin 1.3
  * Better Slack RTM handling
  * Debug messages
+ * Better notification
 
 ### 1.0.4
  * Slack format messages changes to match Simtron v2
@@ -34,8 +35,7 @@ Create `res/values/slack.xml` and include the following values:
 
 ## Bugs
  * Random '?' messages
- * SMSs cropped
- * Slack websocket dies
+ * Slack web-socket dies
 
 
 ## FAQ
