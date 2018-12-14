@@ -1,20 +1,31 @@
 package com.tuenti.acalvo.meusimtron
 
-import android.app.IntentService
+import android.app.Service
 import android.content.Intent
+import android.os.IBinder
+import android.util.Log
 
-class StatusService : IntentService("StatusService") {
+class StatusService : Service() {
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.i("MEU-SLACK", "Status service started")
+        start()
+        return START_STICKY
+    }
+
     private var listener: SlackListener? = null
 
-    override fun onHandleIntent(intent: Intent?) {
+    private fun start() {
         if (listener == null || !listener!!.isAlive()) {
             val token = getString(R.string.token)
             val channel = getString(R.string.channel)
             val debugChannel = getString(R.string.debugChannel)
             listener = SlackListener(SlackInfo(token, channel, debugChannel))
 
-            SlackService.instance.rtm(token, listener!!)
+            doAsync {
+                SlackService.instance.rtm(token, listener!!)
+            }
         }
-
     }
 }

@@ -51,13 +51,14 @@ class MainActivity : AppCompatActivity() {
             errorSnackbar?.show()
         }
 
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(Intent(this, StatusService::class.java))
+        } else {
+            startService(Intent(this, StatusService::class.java))
+        }
+
         createNotification()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        startService(Intent(this, StatusService::class.java))
     }
 
     private fun createNotification() {
@@ -86,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         val text = if(sims.isEmpty()) {
             "No sims"
         } else{
-            sims.joinToString(", ", "Listening ", "sims.") { it.getMsisdnOrIcc() }
+            sims.joinToString(", ", "Listening ", " sims.") { it.getMsisdnOrIcc() }
         }
         val mBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
                 .setSmallIcon(R.drawable.ic_stat_ms)
@@ -187,7 +188,7 @@ fun SubscriptionManager.getSims(): List<Pair<Int, String>> = try {
     (0..activeSubscriptionInfoCountMax).mapNotNull {
         val icc = getActiveSubscriptionInfoForSimSlotIndex(it)?.iccId
         if (icc != null) {
-            Log.d("SIM", "$icc found in slot $it")
+            Log.d("MEU-SIM", "$icc found in slot $it")
             Pair(it, icc)
         } else {
             null
