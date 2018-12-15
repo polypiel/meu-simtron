@@ -4,7 +4,8 @@ Forwards incoming SMSs to Slack
 ## How to use
 Create `res/values/slack.xml` and include the following values:
  * token: your Slack bot token
- * channel: the Slack channel ID to write
+ * channel: the Slack channel ID to send texts
+ * debugChannel: a debug Slack channel ID
  
 ### Requirements
  * Android 7 or above

@@ -1,11 +1,6 @@
 package com.tuenti.acalvo.meusimtron.activities
 
 import android.Manifest
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.TaskStackBuilder
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -13,8 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
 import android.support.v7.app.AppCompatActivity
 import android.telephony.SubscriptionManager
 import android.util.Log
@@ -56,49 +49,6 @@ class MainActivity : AppCompatActivity() {
             startForegroundService(Intent(this, StatusService::class.java))
         } else {
             startService(Intent(this, StatusService::class.java))
-        }
-
-        createNotification()
-    }
-
-    private fun createNotification() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Meu Simtron"
-            val descriptionText = "Meu Simtron persistent notification"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(NOTIFICATION_CHANNEL, name, importance).apply {
-                description = descriptionText
-            }
-            // Register the channel with the system
-            val notificationManager: NotificationManager =
-                    getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val resultIntent = Intent(this, MainActivity::class.java)
-        val resultPendingIntent: PendingIntent? = TaskStackBuilder.create(this).run {
-            addNextIntentWithParentStack(resultIntent)
-            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
-        }
-
-        val sims = Directory.instance.getAllSimInfo()
-        val text = if(sims.isEmpty()) {
-            "No sims"
-        } else{
-            sims.joinToString(", ", "Listening ", " sims.") { it.getMsisdnOrIcc() }
-        }
-        val mBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
-                .setSmallIcon(R.drawable.ic_stat_ms)
-                .setContentTitle("MeuSimtron")
-                .setContentText(text)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(resultPendingIntent)
-                .setOngoing(true)
-        with(NotificationManagerCompat.from(this)) {
-            // notificationId is a unique int for each notification that you must define
-            notify(0, mBuilder.build())
         }
     }
 
@@ -180,9 +130,6 @@ class MainActivity : AppCompatActivity() {
         const val NOTIFICATION_CHANNEL = "meu-simtron-not"
     }
 }
-
-fun Sim.getMsisdnOrIcc() =
-        simInfo?.msisdn ?: icc
 
 fun SubscriptionManager.getSims(): List<Pair<Int, String>> = try {
     (0..activeSubscriptionInfoCountMax).mapNotNull {

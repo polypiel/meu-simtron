@@ -50,6 +50,7 @@ class SlackService private constructor() {
     }
 
     fun rtm(token: String, listener: SlackListener) {
+        Log.i(LOG_TAG, "Starting Slack RTM...")
         val client = OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)
                 .build()
