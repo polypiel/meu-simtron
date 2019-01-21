@@ -12,7 +12,8 @@ enum class PaymentModel {
 
 enum class Provider(val country: Country, private val displayName: String) {
     MOVISTAR_AR(Country.AR, "Movistar"),
-    MOVISTAR_B2B_AR(Country.AR, "Movistar B2B");
+    MOVISTAR_B2B_AR(Country.AR, "Movistar B2B"),
+    MOVISTAR_B2B_T3_AR(Country.AR, "Movistar B2B T3");
 
     override fun toString(): String = displayName
 }
@@ -73,7 +74,10 @@ class Directory private constructor() {
                 // Ops & QA
                 "8954079144256579428" to Sim("8954079144256579428", "541158057661", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
                 "8954079144256579188" to Sim("8954079144256579188", "541145268397", Provider.MOVISTAR_B2B_AR, PaymentModel.POSTPAY),
-                "8954079144256579204" to Sim("8954079144256579204", "541128565594", Provider.MOVISTAR_B2B_AR, PaymentModel.POSTPAY)
+                "8954079144256579204" to Sim("8954079144256579204", "541128565594", Provider.MOVISTAR_B2B_AR, PaymentModel.POSTPAY),
+                // B2B T3 Madrid
+                "8954078100390199995" to Sim("8954078100390199995", "541137009085", Provider.MOVISTAR_B2B_T3_AR, PaymentModel.POSTPAY),
+                "8954078100390199961" to Sim("8954078100390199961", "541135701285", Provider.MOVISTAR_B2B_T3_AR, PaymentModel.POSTPAY)
         )
     }
 
