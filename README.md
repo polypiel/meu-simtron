@@ -15,8 +15,9 @@ Create `res/values/slack.xml` and include the following values:
 ### 1.0.5
  * Kotlin 1.3
  * Better Slack RTM handling
+ * Better notification messages
  * Debug messages
- * Better notification
+ * Updated lines dictionary
 
 ### 1.0.4
  * Slack format messages changes to match Simtron v2
