@@ -12,6 +12,8 @@ Create `res/values/slack.xml` and include the following values:
  * Set off any battery-saving preference related with the app
  
 ## Changelog
+### 1.0.6
+
 ### 1.0.5
  * Kotlin 1.3
  * Better Slack RTM handling
