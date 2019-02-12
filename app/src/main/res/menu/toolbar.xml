@@ -5,7 +5,4 @@
         android:title="@string/refresh"
         android:icon="@drawable/baseline_autorenew_24"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/action_add_sim"
-        android:title="Add sim" />
 </menu>

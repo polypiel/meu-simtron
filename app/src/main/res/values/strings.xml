@@ -5,6 +5,7 @@
     <string name="no_permissions_error">MeuSimtron needs some permissions to work. Tap on refresh button to allow them.</string>
     <string name="title_activity_edit_sim">Sim data</string>
     <string name="title_activity_sim">Sim</string>
+    <string name="about">MeuSimtron %s\nMade by @acalvo with ❤️</string>
 
     <string-array name="providers_array">
         <item>Movistar Ar</item>

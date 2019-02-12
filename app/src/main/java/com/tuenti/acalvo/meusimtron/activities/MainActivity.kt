@@ -15,7 +15,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import android.widget.TextView
 import com.tuenti.acalvo.meusimtron.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +33,9 @@ class MainActivity : AppCompatActivity() {
         val layout = findViewById<ConstraintLayout>(R.id.layout)
         errorSnackbar = Snackbar.make(layout, R.string.no_permissions_error, Snackbar.LENGTH_INDEFINITE)
         errorSnackbar?.view?.setBackgroundColor(Color.parseColor("#ff7961"))
+
+        val aboutText = findViewById<TextView>(R.id.aboutText)
+        aboutText.text = String.format(getString(R.string.about), BuildConfig.VERSION_NAME)
 
         val token = getString(R.string.token)
         val channel = getString(R.string.channel)
@@ -96,13 +101,6 @@ class MainActivity : AppCompatActivity() {
                         val layout = findViewById<ConstraintLayout>(R.id.layout)
                         Snackbar.make(layout, R.string.list_refreshed, Snackbar.LENGTH_SHORT).show()
                     }
-                    true
-                }
-                R.id.action_add_sim -> {
-                    val intent = Intent(this, SimActivity::class.java).apply {
-                        //putExtra(EXTRA_MESSAGE, message)
-                    }
-                    startActivity(intent)
                     true
                 }
 
