@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         val simsList = findViewById<ListView>(R.id.simsList)
         simsList.adapter = ArrayAdapter<Sim>(
                 this,
-                android.R.layout.simple_list_item_1,
+                R.layout.listrow,
                 Directory.instance.getAllSimInfo())
     }
 
