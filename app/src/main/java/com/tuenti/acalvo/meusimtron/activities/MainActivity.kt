@@ -1,6 +1,7 @@
 package com.tuenti.acalvo.meusimtron.activities
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -11,13 +12,12 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.telephony.SubscriptionManager
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
 import com.tuenti.acalvo.meusimtron.*
-import kotlinx.android.synthetic.main.activity_main.view.*
+import kotlinx.android.synthetic.main.listrow.view.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -82,10 +82,7 @@ class MainActivity : AppCompatActivity() {
         val sims = applicationContext.getSystemService(SubscriptionManager::class.java).getSims()
         Directory.instance.sync(sims)
         val simsList = findViewById<ListView>(R.id.simsList)
-        simsList.adapter = ArrayAdapter<Sim>(
-                this,
-                R.layout.listrow,
-                Directory.instance.getAllSimInfo())
+        simsList.adapter = SimRowAdapter(this, Directory.instance.getAllSimInfo())
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -141,4 +138,15 @@ fun SubscriptionManager.getSims(): List<Pair<Int, String>> = try {
     }.toList()
 } catch (e: SecurityException) {
     emptyList()
+}
+
+class SimRowAdapter(context: Context, list: List<Sim>): ArrayAdapter<Sim>(context, 0, list) {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
+        val sim = getItem(position)!!
+        val retView: View = convertView ?: LayoutInflater.from(getContext()).inflate(R.layout.listrow, parent, false);
+        retView.flag.text = sim.simInfo?.provider?.country?.unicode ?: "🇦🇶"
+        retView.headerLine.text = sim.simInfo?.msisdn ?: sim.icc
+        retView.tagLine.text = sim.simInfo?.tagLine() ?: "Unknown SIM"
+        return retView
+    }
 }

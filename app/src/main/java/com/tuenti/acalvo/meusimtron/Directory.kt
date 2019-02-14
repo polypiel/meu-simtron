@@ -52,6 +52,7 @@ data class SimInfo(
 ) {
     override fun toString() =  "${provider.country.unicode} $msisdn - $provider $paymentModel"
     fun toSlack() = "${provider.country.slack} *$msisdn* $provider $paymentModel"
+    fun tagLine() = "$provider $paymentModel"
 }
 
 class Directory private constructor() {
