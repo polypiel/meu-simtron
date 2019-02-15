@@ -11,9 +11,13 @@ enum class PaymentModel {
 }
 
 enum class Provider(val country: Country, private val displayName: String) {
-    MOVISTAR_AR(Country.AR, "Movistar"),
-    MOVISTAR_B2B_AR(Country.AR, "Movistar B2B"),
-    MOVISTAR_B2B_T3_AR(Country.AR, "Movistar B2B T3");
+    MOVISTAR_AR(Country.AR, "Movistar Ar"),
+    MOVISTAR_B2B_AR(Country.AR, "Movistar Ar B2B"),
+    MOVISTAR_B2B_T3_AR(Country.AR, "Movistar B2B T3"),
+    MOVISTAR_EC(Country.EC, "Movistar Ec"),
+    O2_UK(Country.GB, "O2 UK"),
+    VIVO_BR(Country.BR, "Vivo"),
+    VIVO_BR_LEGACY(Country.BR, "Vivo Legacy");
 
     override fun toString(): String = displayName
 }
@@ -21,6 +25,7 @@ enum class Provider(val country: Country, private val displayName: String) {
 enum class Country(val slack: String, val unicode: String) {
     AR(":flag-ar:", "🇦🇷"),
     BR(":flag-br", "🇧🇷"),
+    EC(":flag-ec:", "🇪🇨"),
     ES(":flag-es:","🇪🇸"),
     GB("flag-gb", "🇬🇧")
 }
@@ -42,6 +47,8 @@ data class Sim(val icc: Icc, val simInfo: SimInfo?) {
     }
 
     fun hasProviderInfo(): Boolean = simInfo != null
+    fun flagUnicode(): String = simInfo?.provider?.country?.unicode ?: "🇦🇶"
+    fun msisdn(): String = simInfo?.msisdn ?: icc
 }
 
 typealias Msisdn = String

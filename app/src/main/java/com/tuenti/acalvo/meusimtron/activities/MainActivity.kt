@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
+
         val layout = findViewById<ConstraintLayout>(R.id.layout)
         errorSnackbar = Snackbar.make(layout, R.string.no_permissions_error, Snackbar.LENGTH_INDEFINITE)
         errorSnackbar?.view?.setBackgroundColor(Color.parseColor("#ff7961"))
@@ -83,6 +84,16 @@ class MainActivity : AppCompatActivity() {
         Directory.instance.sync(sims)
         val simsList = findViewById<ListView>(R.id.simsList)
         simsList.adapter = SimRowAdapter(this, Directory.instance.getAllSimInfo())
+        simsList.setOnItemClickListener { parent, view, position, id ->
+            val sim = Directory.instance.getSimInfo(position)!!
+            if (!sim.hasProviderInfo()) {
+                val intent = Intent(this, SimActivity::class.java).apply {
+                    putExtra("sim", position)
+                    putExtra("icc", sim.icc)
+                }
+                startActivity(intent)
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -144,9 +155,9 @@ class SimRowAdapter(context: Context, list: List<Sim>): ArrayAdapter<Sim>(contex
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
         val sim = getItem(position)!!
         val retView: View = convertView ?: LayoutInflater.from(getContext()).inflate(R.layout.listrow, parent, false);
-        retView.flag.text = sim.simInfo?.provider?.country?.unicode ?: "🇦🇶"
-        retView.headerLine.text = sim.simInfo?.msisdn ?: sim.icc
-        retView.tagLine.text = sim.simInfo?.tagLine() ?: "Unknown SIM"
+        retView.flag.text = sim.flagUnicode()
+        retView.headerLine.text = sim.msisdn()
+        retView.tagLine.text = sim.simInfo?.tagLine() ?: "Tap to identify"
         return retView
     }
 }

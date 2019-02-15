@@ -4,7 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:padding="6dip">
+    android:clipToPadding="false"
+    android:paddingLeft="12dip"
+    android:paddingTop="16dip"
+    android:paddingRight="12dip"
+    android:paddingBottom="16dip">
 
     <TextView
         android:id="@+id/flag"
