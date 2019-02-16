@@ -14,6 +14,11 @@ class SimActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sim)
 
+        setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.title = "Add Sim"
+
         val icc = intent.getStringExtra("icc")
         val simIndex = intent.getIntExtra("sim", -1)
 

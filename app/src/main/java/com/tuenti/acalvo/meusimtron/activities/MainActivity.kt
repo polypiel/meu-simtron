@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-
         val layout = findViewById<ConstraintLayout>(R.id.layout)
         errorSnackbar = Snackbar.make(layout, R.string.no_permissions_error, Snackbar.LENGTH_INDEFINITE)
         errorSnackbar?.view?.setBackgroundColor(Color.parseColor("#ff7961"))
