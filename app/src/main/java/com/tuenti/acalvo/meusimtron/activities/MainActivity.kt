@@ -84,14 +84,11 @@ class MainActivity : AppCompatActivity() {
         val simsList = findViewById<ListView>(R.id.simsList)
         simsList.adapter = SimRowAdapter(this, Directory.instance.getAllSimInfo())
         simsList.setOnItemClickListener { parent, view, position, id ->
-            val sim = Directory.instance.getSimInfo(position)!!
-            if (!sim.hasProviderInfo()) {
-                val intent = Intent(this, SimActivity::class.java).apply {
-                    putExtra("sim", position)
-                    putExtra("icc", sim.icc)
-                }
-                startActivity(intent)
+            val intent = Intent(this, SimActivity::class.java).apply {
+                putExtra("sim", position)
+                putExtra("icc", Directory.instance.getSimInfo(position)!!.icc)
             }
+            startActivity(intent)
         }
     }
 

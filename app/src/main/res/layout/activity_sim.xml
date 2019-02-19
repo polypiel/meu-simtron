@@ -15,89 +15,91 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/textView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ICC" />
+            android:text="@string/sim_icc" />
 
         <TextView
             android:id="@+id/editText1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             tools:text="8954073144104702194" />
+    </LinearLayout>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.04" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Phone number" />
+            android:text="@string/sim_phonenumber"
+            android:labelFor="@id/editText2"/>
 
         <EditText
             android:id="@+id/editText2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:inputType="phone"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             tools:text="541165099125" />
+    </LinearLayout>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.04" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Provider" />
+            android:text="@string/sim_provider"
+            android:labelFor="@id/spinner3"/>
 
         <Spinner
             android:id="@+id/spinner3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/providers_array"
+            android:text="Movistar Ar"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
+    </LinearLayout>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.04" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Payment model" />
+            android:text="@string/sim_paymentmodel"
+            android:labelFor="@id/spinner4" />
 
         <Spinner
             android:id="@+id/spinner4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/payment_models_array"
+            android:text="Prepay"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
     </LinearLayout>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
-        android:text="Save" />
+        android:text="@string/sim_save" />
 
 </LinearLayout>

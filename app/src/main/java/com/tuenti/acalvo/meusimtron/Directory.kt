@@ -10,7 +10,7 @@ enum class PaymentModel {
     override fun toString(): String = name.toLowerCase().capitalize()
 }
 
-enum class Provider(val country: Country, private val displayName: String) {
+enum class Provider(val country: Country, val displayName: String) {
     MOVISTAR_AR(Country.AR, "Movistar Ar"),
     MOVISTAR_B2B_AR(Country.AR, "Movistar Ar B2B"),
     MOVISTAR_B2B_T3_AR(Country.AR, "Movistar B2B T3"),
@@ -19,15 +19,15 @@ enum class Provider(val country: Country, private val displayName: String) {
     VIVO_BR(Country.BR, "Vivo"),
     VIVO_BR_LEGACY(Country.BR, "Vivo Legacy");
 
-    override fun toString(): String = displayName
+    override fun toString(): String = "${country.unicode} ${displayName}"
 }
 
-enum class Country(val slack: String, val unicode: String) {
-    AR(":flag-ar:", "🇦🇷"),
-    BR(":flag-br", "🇧🇷"),
-    EC(":flag-ec:", "🇪🇨"),
-    ES(":flag-es:","🇪🇸"),
-    GB("flag-gb", "🇬🇧")
+enum class Country(val slack: String, val unicode: String, val prefix: String) {
+    AR(":flag-ar:", "🇦🇷", "54"),
+    BR(":flag-br", "🇧🇷", "55"),
+    EC(":flag-ec:", "🇪🇨", "593"),
+    ES(":flag-es:","🇪🇸", "34"),
+    GB("flag-gb", "🇬🇧", "44")
 }
 
 typealias Icc = String
@@ -48,7 +48,7 @@ data class Sim(val icc: Icc, val simInfo: SimInfo?) {
 
     fun hasProviderInfo(): Boolean = simInfo != null
     fun flagUnicode(): String = simInfo?.provider?.country?.unicode ?: "🇦🇶"
-    fun msisdn(): String = simInfo?.msisdn ?: icc
+    fun msisdn(): String = simInfo?.prettyMsisdn() ?: icc
 }
 
 typealias Msisdn = String
@@ -57,9 +57,10 @@ data class SimInfo(
         val provider: Provider,
         val paymentModel: PaymentModel
 ) {
-    override fun toString() =  "${provider.country.unicode} $msisdn - $provider $paymentModel"
-    fun toSlack() = "${provider.country.slack} *$msisdn* $provider $paymentModel"
-    fun tagLine() = "$provider $paymentModel"
+    override fun toString() =  "${provider.country.unicode} $msisdn - ${provider.displayName} $paymentModel"
+    fun toSlack(): String = "${provider.country.slack} *${provider.country.prefix} $msisdn* ${provider.displayName} $paymentModel"
+    fun tagLine(): String = "${provider.displayName} $paymentModel"
+    fun prettyMsisdn(): String = "${provider.country.prefix} $msisdn"
 }
 
 class Directory private constructor() {
@@ -67,25 +68,25 @@ class Directory private constructor() {
 
     companion object {
         val instance: Directory by lazy { Holder.INSTANCE }
-        private val directory: Map<String, Sim> = mapOf(
+        private val directory: MutableMap<String, Sim> = mutableMapOf(
                  // Madrid
-                "8954073144104702194" to Sim("8954073144104702194", "541165099125", Provider.MOVISTAR_AR, PaymentModel.PREPAY),
-                "8954073144216962371" to Sim("8954073144216962371", "541149753602", Provider.MOVISTAR_AR, PaymentModel.PREPAY),
-                "8954079144222272256" to Sim("8954079144222272256", "541156905551", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
-                "8954075144249486446" to Sim("8954075144249486446", "541151339576", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
+                "8954073144104702194" to Sim("8954073144104702194", "1165099125", Provider.MOVISTAR_AR, PaymentModel.PREPAY),
+                "8954073144216962371" to Sim("8954073144216962371", "1149753602", Provider.MOVISTAR_AR, PaymentModel.PREPAY),
+                "8954079144222272256" to Sim("8954079144222272256", "1156905551", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
+                "8954075144249486446" to Sim("8954075144249486446", "1151339576", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
                 // Argentina
-                "8954079100845301831" to Sim("8954079100845301831", "542236155363", Provider.MOVISTAR_AR, PaymentModel.PREPAY),
-                "8954078100329655471" to Sim("8954078100329655471", "542233055140", Provider.MOVISTAR_AR, PaymentModel.POSTPAY),
-                "8954078144384519222" to Sim("8954078144384519222", "542236870308", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
-                "8954078100329655489" to Sim("8954078100329655489", "542234248531", Provider.MOVISTAR_AR, PaymentModel.POSTPAY),
-                "8954078144384519214" to Sim("8954078144384519214", "542236865242", Provider.MOVISTAR_AR, PaymentModel.POSTPAY),
+                "8954079100845301831" to Sim("8954079100845301831", "2236155363", Provider.MOVISTAR_AR, PaymentModel.PREPAY),
+                "8954078100329655471" to Sim("8954078100329655471", "2233055140", Provider.MOVISTAR_AR, PaymentModel.POSTPAY),
+                "8954078144384519222" to Sim("8954078144384519222", "2236870308", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
+                "8954078100329655489" to Sim("8954078100329655489", "2234248531", Provider.MOVISTAR_AR, PaymentModel.POSTPAY),
+                "8954078144384519214" to Sim("8954078144384519214", "2236865242", Provider.MOVISTAR_AR, PaymentModel.POSTPAY),
                 // Ops & QA
-                "8954079144256579428" to Sim("8954079144256579428", "541158057661", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
-                "8954079144256579188" to Sim("8954079144256579188", "541145268397", Provider.MOVISTAR_B2B_AR, PaymentModel.POSTPAY),
-                "8954079144256579204" to Sim("8954079144256579204", "541128565594", Provider.MOVISTAR_B2B_AR, PaymentModel.POSTPAY),
+                "8954079144256579428" to Sim("8954079144256579428", "1158057661", Provider.MOVISTAR_B2B_AR, PaymentModel.CONTROL),
+                "8954079144256579188" to Sim("8954079144256579188", "1145268397", Provider.MOVISTAR_B2B_AR, PaymentModel.POSTPAY),
+                "8954079144256579204" to Sim("8954079144256579204", "1128565594", Provider.MOVISTAR_B2B_AR, PaymentModel.POSTPAY),
                 // B2B T3 Madrid
-                "8954078100390199995" to Sim("8954078100390199995", "541137009085", Provider.MOVISTAR_B2B_T3_AR, PaymentModel.POSTPAY),
-                "8954078100390199961" to Sim("8954078100390199961", "541135701285", Provider.MOVISTAR_B2B_T3_AR, PaymentModel.POSTPAY)
+                "8954078100390199995" to Sim("8954078100390199995", "1137009085", Provider.MOVISTAR_B2B_T3_AR, PaymentModel.POSTPAY),
+                "8954078100390199961" to Sim("8954078100390199961", "1135701285", Provider.MOVISTAR_B2B_T3_AR, PaymentModel.POSTPAY)
         )
     }
 
@@ -100,6 +101,10 @@ class Directory private constructor() {
 
     fun getSimInfo(slot: Int): Sim? {
         val icc = slots[slot] ?: return null
+        return getSimInfo(icc)
+    }
+
+    fun getSimInfo(icc: String): Sim? {
         return directory.getOrDefault(icc, Sim(icc, null))
     }
 
@@ -113,5 +118,9 @@ class Directory private constructor() {
         iccs.forEach {
             Directory.instance.addSim(it.first, it.second)
         }
+    }
+
+    fun update(icc: String, simInfo: SimInfo) {
+        directory[icc] = Sim(icc, simInfo)
     }
 }

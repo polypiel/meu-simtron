@@ -6,18 +6,9 @@
     <string name="title_activity_edit_sim">Sim data</string>
     <string name="title_activity_sim">Sim</string>
     <string name="about">MeuSimtron %s\nMade by @acalvo with ❤️</string>
-
-    <string-array name="providers_array">
-        <item>Movistar Ar</item>
-        <item>Movistar Ar B2B</item>
-        <item>Vivo Br</item>
-        <item>O2 UK</item>
-        <item>Movistar Es</item>
-    </string-array>
-
-    <string-array name="payment_models_array">
-        <item>Prepay</item>
-        <item>Postpay</item>
-        <item>Control</item>
-    </string-array>
+    <string name="sim_icc">ICC</string>
+    <string name="sim_phonenumber">Phone number (without prefix)</string>
+    <string name="sim_provider">Provider</string>
+    <string name="sim_paymentmodel">Payment model</string>
+    <string name="sim_save">Save</string>
 </resources>
