@@ -34,7 +34,7 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
         val slackMsg = JSONObject(text!!.filterNot { it.isISOControl() })
         handleMessage(slackMsg).forEach {
             Timer().schedule(1000L) {
-                SlackService.instance.send(slackInfo.token, slackMsg.getStr("channel")!!, it)
+                SlackManager.INSTANCE.send(slackInfo.token, slackMsg.getStr("channel")!!, it)
             }
         }
     }
@@ -66,7 +66,7 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
         listening = false
         webSocket?.close(1000, null)
         Timer().schedule(15000L) {
-            SlackService.instance.rtm(slackInfo.channel, this@SlackListener)
+            SlackManager.INSTANCE.rtm(slackInfo.channel, this@SlackListener)
         }
     }
 

@@ -10,9 +10,11 @@ import java.util.concurrent.TimeUnit
 
 class SlackInfo(val token: String, val channel: String, val debugChannel: String)
 
-class SlackAttachment(private val text: String) {
+// TODO factory
+class SlackAttachment(private val text: String, private val fields: List<Pair<String, String>> = emptyList()) {
     override fun toString(): String {
-        return "{\"text\":\"$text\",\"color\":\"#d3d3d3\",\"author_name\":\":envelope_with_arrow:\"}"
+        val fieldsJson = fields.map { "{\"title\":\"${it.first}\",\"value\":\"${it.second}\",\"short\":true}" }.joinToString(",")
+        return "{\"text\":\"$text\",\"color\":\"#d3d3d3\",\"author_name\":\":envelope_with_arrow:\",\"fields\":[$fieldsJson]}"
     }
 }
 
@@ -20,8 +22,8 @@ fun List<SlackAttachment>.toJson() =
         if (isEmpty()) ""
         else joinToString(",", "[", "]")
 
-class SlackService private constructor() {
-    private object Holder { val INSTANCE = SlackService() }
+class SlackManager private constructor() {
+    private object Holder { val INSTANCE = SlackManager() }
 
     fun send(token: String, channel: String, text: String, attachments: List<SlackAttachment> = emptyList()) {
         val requestBody = FormBody.Builder()
@@ -78,7 +80,7 @@ class SlackService private constructor() {
     }
 
     companion object {
-        val instance: SlackService by lazy { Holder.INSTANCE }
+        val INSTANCE: SlackManager by lazy { Holder.INSTANCE }
         const val LOG_TAG = "MEU-SLACK"
     }
 }

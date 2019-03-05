@@ -10,13 +10,16 @@ import android.util.Log
 import com.tuenti.acalvo.meusimtron.activities.MainActivity
 import com.tuenti.acalvo.meusimtron.activities.MainActivity.Companion.NOTIFICATION_CHANNEL
 
+// TODO update notification
 class StatusService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
+    private var notificationBuilder: NotificationCompat.Builder? = null
+
     override fun onCreate() {
         super.onCreate()
-        val notification = createNotification()
-        startForeground(1, notification)
+        notificationBuilder = createNotification()
+        startForeground(1, notificationBuilder!!.build())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -35,12 +38,12 @@ class StatusService : Service() {
             listener = SlackListener(SlackInfo(token, channel, debugChannel))
 
             doAsync {
-                SlackService.instance.rtm(token, listener!!)
+                SlackManager.INSTANCE.rtm(token, listener!!)
             }.execute()
         }
     }
 
-    private fun createNotification(): Notification {
+    private fun createNotification(): NotificationCompat.Builder {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -62,20 +65,23 @@ class StatusService : Service() {
             getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
         }
 
-        val sims = Directory.instance.getAllSimInfo()
-        val text = if(sims.isEmpty()) {
-            "No sims"
-        } else{
-            sims.joinToString(", ", "Listening ", " sims.") { it.getMsisdnOrIcc() }
-        }
-        val mBuilder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
+
+        return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
                 .setSmallIcon(R.drawable.ic_stat_ms)
-                .setContentTitle("MeuSimtron")
-                .setContentText(text)
+                .setContentTitle(getNotificationText())
+                .setContentText("Touch to open")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(resultPendingIntent)
                 .setOngoing(true)
-        return mBuilder.build()
+    }
+
+    private fun getNotificationText(): String  {
+        val sims = Directory.instance.getAllSimInfo()
+        return if(sims.isEmpty()) {
+            "No sims"
+        } else{
+            sims.joinToString(", ") { it.getMsisdnOrIcc() }
+        }
     }
 }
 

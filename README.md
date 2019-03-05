@@ -14,8 +14,8 @@ Create `res/values/slack.xml` and include the following values:
 ## Changelog
 ### 1.0.6
  * Update notifications (TODO)
- * Remove menu (TODO)
- * Sims actions (mute, add) (TODO)
+ * Removed menu
+ * Sims edition
  * Better status keep-alive (TODO)
 
 ### 1.0.5

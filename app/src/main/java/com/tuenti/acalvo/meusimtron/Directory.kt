@@ -20,14 +20,15 @@ enum class Provider(val country: Country, val displayName: String) {
     VIVO_BR_LEGACY(Country.BR, "Vivo Legacy");
 
     override fun toString(): String = "${country.unicode} ${displayName}"
+    fun toSlack(): String = "${country.slack} $displayName"
 }
 
 enum class Country(val slack: String, val unicode: String, val prefix: String) {
     AR(":flag-ar:", "🇦🇷", "54"),
-    BR(":flag-br", "🇧🇷", "55"),
+    BR(":flag-br:", "🇧🇷", "55"),
     EC(":flag-ec:", "🇪🇨", "593"),
     ES(":flag-es:","🇪🇸", "34"),
-    GB("flag-gb", "🇬🇧", "44")
+    GB(":flag-gb:", "🇬🇧", "44")
 }
 
 typealias Icc = String
@@ -120,7 +121,9 @@ class Directory private constructor() {
         }
     }
 
-    fun update(icc: String, simInfo: SimInfo) {
+    fun update(icc: String, simInfo: SimInfo): Boolean {
+        val oldSimInfo = directory[icc]?.simInfo
         directory[icc] = Sim(icc, simInfo)
+        return simInfo != oldSimInfo
     }
 }
