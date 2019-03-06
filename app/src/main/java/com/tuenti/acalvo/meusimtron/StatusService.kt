@@ -19,6 +19,14 @@ class StatusService : Service() {
         return START_STICKY
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("MEU-SLACK", "ondestroy!")
+        val broadcastIntent = Intent(this, RestartReceiver::class.java)
+        sendBroadcast(broadcastIntent)
+        //stoptimertask()
+    }
+
     private var listener: SlackListener? = null
 
     private fun start() {
