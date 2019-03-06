@@ -19,7 +19,7 @@ class AppManager: Application() {
                 val token = getString(R.string.token)
                 val channel = getString(R.string.debugChannel)
                 // TODO add mobile info
-                SlackManager.INSTANCE.send(token, channel, ":floppy_disk: Updated sim", listOf(SlackAttachment("", simInfo.toSlack(icc))))
+                SlackManager.INSTANCE.send(token, channel, ":floppy_disk: Updated sim", listOf(SlackAttachment(text = "Holi", fields = simInfo.toSlack(icc))))
             }.execute()
         }
     }
