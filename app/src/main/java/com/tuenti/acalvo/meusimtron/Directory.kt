@@ -19,7 +19,7 @@ enum class Provider(val country: Country, val displayName: String) {
     VIVO_BR(Country.BR, "Vivo"),
     VIVO_BR_LEGACY(Country.BR, "Vivo Legacy");
 
-    override fun toString(): String = "${country.unicode} ${displayName}"
+    override fun toString(): String = "${country.unicode} $displayName"
     fun toSlack(): String = "${country.slack} $displayName"
 }
 
@@ -114,6 +114,7 @@ class Directory private constructor() {
                     .sortedBy { (key, _) -> key }
                     .map { directory.getOrDefault(it.second, Sim(it.second)) }
 
+    // TODO return bool updated
     fun sync(iccs: List<Pair<Int, String>>) {
         slots.clear()
         iccs.forEach {

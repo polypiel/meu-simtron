@@ -56,8 +56,6 @@ class SimActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT).show()
             } else {
                 AppManager.INSTANCE.onSimUpdated(icc, simInfo)
-                // TODO update notification
-                // TODO send slack notification
                 startActivity(Intent(this, MainActivity::class.java))
             }
         }

@@ -12,10 +12,10 @@ Create `res/values/slack.xml` and include the following values:
  * Set off any battery-saving preference related with the app
  
 ## Changelog
-### 1.0.6
- * Update notifications (TODO)
- * Removed menu
- * Sims edition
+### 1.1.0
+ * Visual improvements
+ * Edit sim info
+ * Better app notification
  * Better status keep-alive (TODO)
 
 ### 1.0.5
@@ -23,7 +23,7 @@ Create `res/values/slack.xml` and include the following values:
  * Better Slack RTM handling
  * Better notification messages
  * Debug messages
- * Updated lines dictionary
+ * Updated sims dictionary
 
 ### 1.0.4
  * Slack format messages changes to match Simtron v2

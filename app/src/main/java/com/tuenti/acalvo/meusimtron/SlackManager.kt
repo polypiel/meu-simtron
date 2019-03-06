@@ -10,20 +10,21 @@ import java.util.concurrent.TimeUnit
 
 class SlackInfo(val token: String, val channel: String, val debugChannel: String)
 
-// TODO factory
 class SlackAttachment(private val text: String? = null, private val icon: String? = null, private val fields: List<Pair<String, String>>? = null) {
     override fun toString(): String {
         val fieldsJson = fields?.joinToString(",", "[", "]") { "{\"title\":\"${it.first}\",\"value\":\"${it.second}\",\"short\":true}" }
         val attrs = mapOf(
-                "text" to text,
-                "author_name" to icon,
-                "color" to "#d3d3d3",
+                "text" to text?.toJson(),
+                "author_name" to icon?.toJson(),
+                "color" to "\"#d3d3d3\"",
                 "fields" to fieldsJson
         )
-        val str = attrs.entries.filter { it.value != null }.joinToString(",", "{", "}") { "\"${it.key}\":\"${it.value}\"" }
+        val str = attrs.entries.filter { it.value != null }.joinToString(",", "{", "}") { "\"${it.key}\":${it.value}" }
         Log.i("DEBUG", str)
         return str
     }
+
+    private fun String.toJson() = "\"$this\""
 }
 
 fun List<SlackAttachment>.toJson() =
