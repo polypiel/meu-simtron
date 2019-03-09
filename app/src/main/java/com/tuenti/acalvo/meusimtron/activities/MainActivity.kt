@@ -56,13 +56,13 @@ class MainActivity : AppCompatActivity() {
             startService(Intent(this, StatusService::class.java))
         }
 
-        /*
+        /* TODO
         if (!isMyServiceRunning(mSensorService.getClass())) {
             startService(mServiceIntent);
         }
          */
     }
-/*
+/* TODO
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {

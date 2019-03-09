@@ -24,7 +24,7 @@ class StatusService : Service() {
         Log.i("MEU-SLACK", "ondestroy!")
         val broadcastIntent = Intent(this, RestartReceiver::class.java)
         sendBroadcast(broadcastIntent)
-        //stoptimertask()
+        stop()
     }
 
     private var listener: SlackListener? = null
@@ -39,6 +39,12 @@ class StatusService : Service() {
             doAsync {
                 SlackManager.INSTANCE.rtm(token, listener!!)
             }.execute()
+        }
+    }
+
+    private fun stop() {
+        if (listener?.isAlive() == true) {
+            listener!!.close()
         }
     }
 }

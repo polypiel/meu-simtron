@@ -49,6 +49,10 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
 
     fun isAlive(): Boolean = listening && (currentTime() - lastPing) < LIFESPAN
 
+    fun close() {
+        listening = false
+    }
+
     private fun handleMessage(slackMsg: JSONObject): List<String> =
             when {
                 slackMsg.isPong() -> pong()
@@ -75,6 +79,7 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
             if (listening) {
                 webSocket?.send(PING)
             } else {
+                webSocket?.send(BYE)
                 cancel()
             }
         }
@@ -90,6 +95,7 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
         const val PING_DELAY = 5000L
         const val PING = """{"type":"ping"}"""
         const val LIFESPAN = 300
+        const val BYE = """{"type":"bye"}"""
     }
 
     private fun currentTime() = System.currentTimeMillis() / 1000
@@ -113,4 +119,6 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
         val text = getStr("text")?.trim()
         return text?.toLowerCase() == "simtron" || text == "@simtron"
     }
+
+
 }
