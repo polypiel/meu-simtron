@@ -42,7 +42,7 @@ data class Sim(val icc: Icc, val simInfo: SimInfo?) {
     fun toSlack(debug: Boolean = false): String {
         val str = simInfo?.toSlack() ?: "🇦🇶 Unknown sim with icc: $icc"
         return if (debug)
-            "$str :iphone: ${Build.MANUFACTURER.capitalize()} ${Build.MODEL.capitalize()}"
+            "$str :iphone: ${Build.MANUFACTURER.capitalize()} ${Build.MODEL.capitalize()} :hash: ${BuildConfig.VERSION_NAME}"
         else
             str
     }
