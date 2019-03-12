@@ -13,8 +13,9 @@ enum class PaymentModel {
 enum class Provider(val country: Country, val displayName: String) {
     MOVISTAR_AR(Country.AR, "Movistar Ar"),
     MOVISTAR_B2B_AR(Country.AR, "Movistar Ar B2B"),
-    MOVISTAR_B2B_T3_AR(Country.AR, "Movistar B2B T3"),
+    MOVISTAR_B2B_T3_AR(Country.AR, "Movistar Ar B2B T3"),
     MOVISTAR_EC(Country.EC, "Movistar Ec"),
+    MOVISTAR_ES(Country.ES, "Movistar Es"),
     O2_UK(Country.GB, "O2 UK"),
     VIVO_BR(Country.BR, "Vivo"),
     VIVO_BR_LEGACY(Country.BR, "Vivo Legacy");

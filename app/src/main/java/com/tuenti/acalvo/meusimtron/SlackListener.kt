@@ -120,5 +120,4 @@ class SlackListener(private val slackInfo: SlackInfo): WebSocketListener() {
         return text?.toLowerCase() == "simtron" || text == "@simtron"
     }
 
-
 }
