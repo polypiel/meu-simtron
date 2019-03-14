@@ -44,7 +44,7 @@ class AppManager: Application() {
         }
 
         return NotificationCompat.Builder(this, MainActivity.NOTIFICATION_CHANNEL)
-                .setSmallIcon(R.drawable.ic_stat_ms)
+                .setSmallIcon(R.drawable.ic_stat_name)
                 .setContentTitle(text)
                 .setContentText("Touch to open")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
