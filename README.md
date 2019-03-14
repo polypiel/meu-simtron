@@ -17,6 +17,7 @@ Create `res/values/slack.xml` and include the following values:
  * Edit sim info
  * Better app notification
  * Better status keep-alive (TODO)
+ * Fix rounded icons (Android 8+)
 
 ### 1.0.5
  * Kotlin 1.3
