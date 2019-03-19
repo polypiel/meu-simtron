@@ -16,7 +16,7 @@ Create `res/values/slack.xml` and include the following values:
  * Visual improvements
  * Edit sim info
  * Better app notification
- * Better status keep-alive (TODO)
+ * Better status keep-alive
  * Fix rounded icons (Android 8+)
 
 ### 1.0.5
@@ -46,6 +46,8 @@ Create `res/values/slack.xml` and include the following values:
  * Random '?' messages
  * Slack web-socket dies
 
+## Known Issues
+ * It crashes on Android 9
 
 ## FAQ
 ### How I send texts in the simulator
